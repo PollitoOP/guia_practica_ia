@@ -1,0 +1,153 @@
+body {
+  font-family: Arial;
+  margin: 0;
+  padding: 0;
+  background-color: #f7f7f7;
+}
+header {
+  background: #333;
+  color: white;
+  padding: 1em;
+}
+nav a {
+  margin-right: 15px;
+  color: white;
+  text-decoration: none;
+}
+main {
+  padding: 20px;
+}
+.alert.success {
+  background-color: #d4edda;
+  padding: 10px;
+  margin: 10px 0;
+  border: 1px solid #c3e6cb;
+}
+
+/* Tabla */
+.styled-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: 'Segoe UI', sans-serif;
+  font-size: 15px;
+  background-color: #fff;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+}
+.styled-table th, .styled-table td {
+  padding: 10px 16px;
+  border-bottom: 1px solid #ddd;
+}
+.styled-table th {
+  background-color: #f5f5f5;
+  font-weight: bold;
+  color: #333;
+  text-align: left;
+}
+.styled-table tbody tr:hover {
+  background-color: #f0f8ff;
+}
+
+/* Contenedor adaptable */
+.responsive-container {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  align-items: flex-start;
+}
+
+.left-panel {
+  flex: 1 1 280px;
+  max-width: 400px;
+}
+
+.right-panel {
+  flex: 2 1 600px;
+}
+
+/* Responsive en móviles */
+@media screen and (max-width: 768px) {
+  .responsive-container {
+    flex-direction: column;
+  }
+  .left-panel, .right-panel {
+    max-width: 100%;
+  }
+}
+
+.styled-table {
+  border-collapse: collapse;
+  width: 100%;
+  max-width: 400px;
+  margin-bottom: 2rem;
+}
+
+.styled-table th,
+.styled-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+.styled-table th {
+  background-color: #f2f2f2;
+  text-align: left;
+}
+
+.table-section {
+  margin-bottom: 30px;
+}
+
+.pagination-nav {
+  margin-top: 30px;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 18px;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.page-link {
+  padding: 8px 16px;
+  background-color: rebeccapurple;
+  color: white;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: background-color 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.page-link:hover {
+  background-color: #5e339e;
+}
+
+.page-number {
+  font-weight: bold;
+  font-size: 1.1rem;
+  padding: 8px 12px;
+  background-color: #eee;
+  border-radius: 6px;
+  color: #333;
+  box-shadow: inset 0 0 3px rgba(0,0,0,0.1);
+}
+
+.flag-icon {
+  width: 20px;
+  height: 15px;
+  margin-right: 4px;
+  vertical-align: middle;
+}
+
+.btn-download {
+  padding: 8px 16px;
+  background-color: rebeccapurple;
+  color: white;
+  border-radius: 6px;
+  font-weight: bold;
+  text-decoration: none;
+  transition: background-color 0.3s ease;
+}
+
+.btn-download:hover {
+  background-color: #5e2e91;
+}

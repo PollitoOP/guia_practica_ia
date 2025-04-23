@@ -1,0 +1,82 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<!-- Contenedor dividido -->
+<div class="responsive-container">
+  <!-- Tabla a la izquierda -->
+  <div class="left-panel">
+    <table class="styled-table">
+      <thead>
+        <tr>
+          <th>Provincia</th>
+          <th>Código postal</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for provincia, codigo in provincias_codigos.items() %}
+        <tr>
+          <td>{{ provincia }}</td>
+          <td>{{ codigo }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Gráfico a la derecha -->
+  <div class="right-panel">
+    <h2>Valor Promedio Recaudado por Provincia</h2>
+    <div id="graficoPoblacion" style="max-width: 100%;"></div>
+  </div>
+</div>
+
+<!-- ApexCharts -->
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+<script>
+  const options = {
+    chart: {
+      type: 'bar',
+      height: 420,
+      toolbar: {
+        show: true,
+        tools: {
+          download: true
+        },
+        export: {
+          csv: {
+            filename: "valor_promedio_recaudado"
+          },
+          svg: {
+            filename: "valor_promedio_recaudado"
+          },
+          png: {
+            filename: "valor_promedio_recaudado"
+          }
+        }
+      }
+    },
+    series: [{
+      name: 'Valor Promedio',
+      data: {{ valores|tojson }}
+    }],
+    xaxis: {
+      categories: {{ provincias|tojson }},
+      title: { text: 'Provincia' }
+    },
+    yaxis: {
+      title: { text: 'Valor Promedio Recaudado' }
+    },
+    colors: ['#00aaff'],
+    dataLabels: {
+      enabled: true,
+      style: {
+        colors: ['#000']
+      }
+    }
+  };
+
+  const chart = new ApexCharts(document.querySelector("#graficoPoblacion"), options);
+  chart.render();
+</script>
+
+{% endblock %}

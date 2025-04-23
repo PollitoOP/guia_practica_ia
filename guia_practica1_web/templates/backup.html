@@ -1,0 +1,45 @@
+{% extends "layout.html" %}
+{% block content %}
+<h2>Gestión de Backup</h2>
+
+<!-- Backup manual -->
+<h3>Crear Backup Manual</h3>
+<form method="post" enctype="multipart/form-data" action="{{ url_for('main.backup') }}">
+  <input type="file" name="file" required>
+  <button type="submit">Crear Backup</button>
+</form>
+
+<!-- Restaurar archivo -->
+<h3>Restaurar Archivo</h3>
+<form action="{{ url_for('main.restaurar') }}" method="post">
+  <label for="filename">Nombre del archivo original (sin timestamp):</label><br>
+  <input type="text" name="filename" placeholder="ej. documento.txt" required>
+  <button type="submit">Restaurar</button>
+</form>
+
+<!-- Validar archivos -->
+<h3>Validar Archivos</h3>
+<form action="{{ url_for('main.validar') }}" method="post" enctype="multipart/form-data">
+  <label for="original">Archivo Original:</label>
+  <input type="file" name="original" required><br>
+  <label for="recuperado">Archivo Recuperado:</label>
+  <input type="file" name="recuperado" required><br>
+  <button type="submit">Validar</button>
+</form>
+
+<!-- Resultado validación -->
+{% if resultado_validacion is defined %}
+  <div class="alert {{ 'success' if resultado_validacion else 'error' }}">
+    {{ '✅ Archivos idénticos' if resultado_validacion else '❌ Archivos diferentes' }}
+  </div>
+{% endif %}
+
+<!-- Menú adicional -->
+<h3>Opciones</h3>
+<ul>
+  <li><a href="{{ url_for('main.backup') }}">Crear Backup</a></li>
+  <li><a href="{{ url_for('main.restaurar') }}">Restaurar Archivo</a></li>
+  <li><a href="{{ url_for('main.validar') }}">Validar Archivos</a></li>
+</ul>
+
+{% endblock %}

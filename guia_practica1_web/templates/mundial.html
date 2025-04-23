@@ -1,0 +1,94 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<!-- Contenedor dividido -->
+<div class="responsive-container">
+  <!-- Tabla a la izquierda -->
+  <div class="left-panel">
+    <h3>Mundiales Disputados</h3>
+    <table class="styled-table">
+      <thead>
+        <tr>
+          <th>Año</th>
+          <th>País</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for anio, pais in historial %}
+        <tr>
+          <td>{{ anio }}</td>
+          <td>
+            {% if pais == "Corea/Japón" %}
+              <img src="https://flagcdn.com/w40/kr.png" class="flag-icon" alt="Corea del Sur">
+              <img src="https://flagcdn.com/w40/jp.png" class="flag-icon" alt="Japón">
+            {% else %}
+              {% set codigo = codigos.get(pais) %}
+              {% if codigo %}
+                <img src="https://flagcdn.com/w40/{{ codigo }}.png" class="flag-icon" alt="{{ pais }}">
+              {% endif %}
+            {% endif %}
+            {{ pais }}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Gráfico a la derecha -->
+  <div class="right-panel">
+    <h2>Partidos por Selección - Copa Mundial</h2>
+
+    <!-- Botón de descarga -->
+    <div style="text-align: right; margin-bottom: 10px;">
+      <a href="{{ url_for('static', filename='pdf/Informe_Mundial.pdf') }}"
+         class="btn-download" download>📄 Download Informe</a>
+    </div>
+
+    <div id="graficoMundial" style="max-width: 100%; height: 400px;"></div>
+
+    <!-- Paginación -->
+    <div class="pagination-nav">
+      {% if pagina > 1 %}
+        <a href="{{ url_for('main.mundial', pagina=pagina-1) }}" class="page-link">⟵ Anterior</a>
+      {% endif %}
+      <span class="page-number">{{ paises_visualizados }}/{{ total_equipos }}</span>
+      {% if pagina < total_paginas %}
+        <a href="{{ url_for('main.mundial', pagina=pagina+1) }}" class="page-link">Siguiente ⟶</a>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<!-- ApexCharts -->
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+<script>
+  const chart = new ApexCharts(document.querySelector("#graficoMundial"), {
+    chart: {
+      type: 'bar',
+      stacked: true,
+      height: 400,
+      toolbar: { show: false }
+    },
+    series: [
+      { name: 'Ganados', data: {{ ganados|tojson }}, color: '#28a745' },
+      { name: 'Empatados', data: {{ empatados|tojson }}, color: '#ffc107' },
+      { name: 'Perdidos', data: {{ perdidos|tojson }}, color: '#dc3545' },
+      { name: 'Pendientes', data: {{ pendientes|tojson }}, color: '#6c757d' }
+    ],
+    xaxis: {
+      categories: {{ equipos|tojson }},
+      title: { text: 'Selección' }
+    },
+    yaxis: {
+      title: { text: 'Cantidad de Partidos' }
+    },
+    dataLabels: {
+      enabled: true,
+      style: { colors: ['#fff'] }
+    },
+    legend: { position: 'bottom' }
+  });
+  chart.render();
+</script>
+{% endblock %}
