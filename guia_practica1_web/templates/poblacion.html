@@ -27,7 +27,20 @@
   <div class="right-panel">
     <h2>Valor Promedio Recaudado por Provincia</h2>
     <div id="graficoPoblacion" style="max-width: 100%;"></div>
+
+    <div class="pagination-nav">
+    {% if pagina > 1 %}
+      <a href="{{ url_for('main.poblacion', pagina=pagina-1) }}" class="page-link">⟵ Anterior</a>
+    {% endif %}
+    <span class="page-number">{{ pagina }}/{{ total_paginas }}</span>
+    {% if pagina < total_paginas %}
+      <a href="{{ url_for('main.poblacion', pagina=pagina+1) }}" class="page-link">Siguiente ⟶</a>
+    {% endif %}
   </div>
+  </div>
+
+  
+  
 </div>
 
 <!-- ApexCharts -->

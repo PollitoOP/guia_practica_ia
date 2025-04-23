@@ -6,22 +6,34 @@ CODIGOS = {
     'Araba': 'Ara_004', 'Ávila': 'Avi_005', 'Badajoz': 'Bad_006',
     'Balears': 'Bal_007', 'Barcelona': 'Bar_008', 'Burgos': 'Bur_009', 'Cáceres': 'Cac_010'
 }
-
 def procesar_poblacion(path):
     """
     Procesa el archivo CSV de población y devuelve un diccionario con el valor promedio por provincia.
-    Los valores nulos en 'Valor' son reemplazados por el valor mínimo encontrado.
-    """
-    df = pd.read_csv(path)
+    - Convierte la columna 'Recaudación' a numérico.
+    - Reemplaza valores nulos con el valor mínimo.
+    - Agrega códigos por provincia.
+    - Calcula el promedio por provincia.
+    
+    # Leer archivo CSV
+    df = pd.read_csv(path, sep=';')
 
-    # Convertir a numérico y depurar valores nulos
-    df['Valor'] = pd.to_numeric(df['Valor'], errors='coerce')
-    df['Valor'].fillna(df['Valor'].min(), inplace=True)
+    # Asegurarse de que la columna Recaudación sea numérica
+    df['Recaudación'] = pd.to_numeric(df['Recaudación'], errors='coerce')
 
-    # Añadir códigos a las provincias
+    # Rellenar valores nulos con el mínimo de la columna
+    df['Recaudación'].fillna(df['Recaudación'].min(), inplace=True)
+
+    # Agregar columna de códigos de provincia
     df['Codigo'] = df['Provincia'].map(CODIGOS)
 
-    # Calcular promedio por provincia
-    promedio = df.groupby('Provincia')['Valor'].mean().round(2)
+    # Agrupar por provincia y calcular promedio
+    promedio = df.groupby('Provincia')['Recaudación'].mean().round(2)
 
-    return promedio.to_dict()
+    # Devolver como diccionario
+    return promedio.to_dict()"""
+    
+    df = pd.read_csv(path, sep=";")
+    df['Recaudación'] = pd.to_numeric(df['Recaudación'], errors='coerce')
+    df['Recaudación'].fillna(df['Recaudación'].min(), inplace=True)
+    promedio = df.groupby('Provincia')['Recaudación'].mean().round(2).reset_index()
+    return promedio  # Ahora retorna un DataFrame, no un diccionario

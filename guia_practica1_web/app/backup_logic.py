@@ -2,13 +2,18 @@ import shutil
 import os
 from datetime import datetime
 import hashlib
+import threading
+import time
+
+# Controlador global para el backup automático
+backup_running = False
+backup_thread = None
 
 def make_backup_file(filepath):
     if os.path.exists(filepath):
         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
         filename = os.path.basename(filepath)
-        backup_name = f"{filename}_{timestamp}"
-        destino = os.path.join('backup', backup_name)
+        destino = os.path.join('backup', f"{filename}_{timestamp}")
         shutil.copy2(filepath, destino)
         return destino
     return None
@@ -34,3 +39,20 @@ def validar_archivos(file1, file2):
     hash1 = hash_file(file1)
     hash2 = hash_file(file2)
     return hash1 == hash2
+
+def backup_automatico(filepath):
+    global backup_running
+    while backup_running:
+        make_backup_file(filepath)
+        time.sleep(300)  # 5 minutos
+
+def iniciar_backup_automatico(filepath):
+    global backup_running, backup_thread
+    if not backup_running:
+        backup_running = True
+        backup_thread = threading.Thread(target=backup_automatico, args=(filepath,))
+        backup_thread.start()
+
+def detener_backup_automatico():
+    global backup_running
+    backup_running = False

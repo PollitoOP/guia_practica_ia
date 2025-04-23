@@ -1,6 +1,7 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash
+from flask import Blueprint, jsonify, render_template, request, redirect, url_for, flash
 import os
 from . import backup_logic, poblacion_logic, mundial_logic
+import subprocess
 
 main_bp = Blueprint("main", __name__)
 
@@ -14,19 +15,39 @@ CODIGO_BANDERAS = {
 
 @main_bp.route('/')
 def index():
-    return render_template("index.html")
+    return render_template("backup.html")
 
 @main_bp.route('/backup', methods=['GET', 'POST'])
 def backup():
     if request.method == 'POST':
-        file = request.files['file']
+        accion = request.form.get('accion')
+        file = request.files.get('file')
+        filepath = None
+
         if file and file.filename:
-            path = os.path.join('backup', file.filename)
-            file.save(path)
-            backup_logic.make_backup_file(path)
-            flash('✅ Backup creado exitosamente.', 'success')
+            filepath = os.path.join('backup', file.filename)
+            file.save(filepath)
+
+        if accion == 'manual':
+            if filepath:
+                backup_logic.make_backup_file(filepath)
+                flash('✅ Backup manual creado.', 'success')
+
+        elif accion == 'iniciar_auto':
+            if filepath:
+                backup_logic.iniciar_backup_automatico(filepath)
+                flash('🕓 Backup automático iniciado cada 5 minutos.', 'success')
+            else:
+                flash('❌ Selecciona un archivo para iniciar el backup automático.', 'error')
+
+        elif accion == 'detener_auto':
+            backup_logic.detener_backup_automatico()
+            flash('🛑 Backup automático detenido.', 'success')
+
         return redirect(url_for('main.backup'))
+
     return render_template("backup.html")
+
 
 @main_bp.route('/restaurar', methods=['POST'])
 def restaurar():
@@ -53,10 +74,11 @@ def validar():
     os.remove(path_recuperado)
 
     return render_template('backup.html', resultado_validacion=resultado)
-
+"""
 @main_bp.route('/poblacion')
 def poblacion():
-    promedio = poblacion_logic.procesar_poblacion("poblaciónMunicipios.csv")
+    
+    promedio = poblacion_logic.procesar_poblacion("poblacionMunicipios_recaudacion.csv")
     provincias = list(promedio.keys())
     valores = list(promedio.values())
 
@@ -68,6 +90,36 @@ def poblacion():
     }
 
     return render_template("poblacion.html", provincias=provincias, valores=valores, provincias_codigos=codigos)
+"""
+@main_bp.route('/poblacion')
+def poblacion():
+    pagina = int(request.args.get('pagina', 1))
+    df = poblacion_logic.procesar_poblacion("poblacionMunicipios_recaudacion.csv")
+
+    # Paginación
+    tamano = 10
+    total = len(df)
+    total_paginas = (total + tamano - 1) // tamano
+    inicio = (pagina - 1) * tamano
+    fin = inicio + tamano
+
+    df_pagina = df.iloc[inicio:fin]
+    provincias = df_pagina['Provincia'].tolist()
+    valores = df_pagina['Recaudación'].tolist()
+
+    codigos = {
+        'Albacete': 'Alb_001', 'Alicante': 'Ali_002', 'Almería': 'Alm_003',
+        'Araba/Álava': 'Ara_004', 'Ávila': 'Avi_005', 'Badajoz': 'Bad_006',
+        'Balears': 'Bal_007', 'Barcelona': 'Bar_008', 'Burgos': 'Bur_009',
+        'Cáceres': 'Cac_010'
+    }
+
+    return render_template("poblacion.html",
+                           provincias=provincias,
+                           valores=valores,
+                           provincias_codigos=codigos,
+                           pagina=pagina,
+                           total_paginas=total_paginas)
 
 @main_bp.route('/mundial')
 def mundial():
